@@ -4,6 +4,7 @@ export const useField = (field) => {
   const valid = ref(true)
   const value = ref(field.value)
   const errors = reactive({})
+  const touched = ref(false)
 
   watch(value, () => {
     valid.value = true
@@ -14,5 +15,5 @@ export const useField = (field) => {
     })
   }, { immediate:true })
 
-  return { value, valid, errors }
+  return { value, valid, errors, touched, blur: () => touched.value = true }
 } 

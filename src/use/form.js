@@ -1,4 +1,4 @@
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { useField } from './field'
 export const useForm = (init = {}) => {
   const form = reactive({})
@@ -6,6 +6,14 @@ export const useForm = (init = {}) => {
     form[key] = useField(value)
   }
 
-  return form
+  form.valid = computed(() => {
+    return Object.keys(form)
+    .filter(item => item !== 'valid')
+    .reduce((total, item) => {
+      total = form[item].valid
+      return total
+    }, true)
+  })
 
+  return form
 }

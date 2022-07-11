@@ -3,8 +3,6 @@
   .modal__content
     .modal__header
       .modal__title Форма
-      pre {{ form.email }}
-      pre {{ form.password }}
       button.modal__close
         img(src="@/assets/images/close.svg", alt="close")
     form.form()
@@ -14,23 +12,25 @@
           type="text" 
           placeholder="Email"
           v-model="form.email.value"
+          @blur="emailBlur"
         )
         span.form__line
-        span.form__error(v-show="!form.email.valid")
-        span.form__info(v-if="form.email.errors.required") Please enter email
+        span.form__error(v-show="emaiError")
+        span.form__info(v-if="emaiErrorInfo") Please enter email
       .form__group
         input.form__control(
           name="comment-text" 
           type="password" 
           placeholder="Password"
           v-model="form.password.value"
+          @blur="form.password.blur"
         )
         span.form__line
-        span.form__error(v-show="!form.password.valid")
-        span.form__info(v-if="form.password.errors.required") Please enter password
-        span.form__info(v-else-if="form.password.errors.minLength") Password lenght 8. Now {{form.password.value.length}}
+        span.form__error(v-show="!form.password.valid && form.password.touched")
+        span.form__info(v-if="form.password.errors.required && form.password.touched") Please enter password
+        span.form__info(v-else-if="form.password.errors.minLength && form.password.touched") Password lenght 8. Now {{form.password.value.length}}
     .form__group
-      .btn(type='submit') Submit
+      .btn(type='submit' :disabled="!form.valid" :class="{ 'btn__disabled': !form.valid }") Submit
 </template>
 
 
@@ -40,6 +40,7 @@ const required = val => !!val
 const minLength = num => val => val.length >= num
 
 import { useForm } from '@/use/form'
+import { computed } from '@vue/runtime-core'
 const form = useForm({
   email: {
     value: "",
@@ -51,7 +52,12 @@ const form = useForm({
   }
 })
 
-console.log('App', form.password)
+
+const emailBlur = form.email.blur
+const emaiError = computed(() => !form.email.valid && form.email.touched)
+const emaiErrorInfo = computed(() => form.email.errors.required && form.email.touched)
+
+ 
 
 </script>
 
@@ -179,6 +185,9 @@ console.log('App', form.password)
   color: #fff;
   &:hover {
     background: #0000C5;
+  }
+  &__disabled {
+    background-color: #3f3f3f!important;
   }
 }
 
