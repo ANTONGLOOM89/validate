@@ -10,10 +10,9 @@ export const useForm = (init = {}) => {
     return Object.keys(form)
     .filter(item => item !== 'valid')
     .reduce((total, item) => {
-      total = form[item].valid
+      total.push(form[item].valid)
       return total
-    }, true)
+    }, []).every(el => el === true)
   })
-
   return form
 }

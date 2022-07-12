@@ -5,30 +5,60 @@
       .modal__title Форма
       button.modal__close
         img(src="@/assets/images/close.svg", alt="close")
+    //- form.form()
+    //-   .form__group
+    //-     input.form__control(
+    //-       name="comment-text" 
+    //-       type="text" 
+    //-       placeholder="Email"
+    //-       v-model="form.email.value"
+    //-       @blur="emailBlur"
+    //-     )
+    //-     span.form__line
+    //-     span.form__error(v-show="emaiError")
+    //-     span.form__info(v-if="emaiErrorInfo") Please enter email
+    //-   .form__group
+    //-     input.form__control(
+    //-       name="comment-text" 
+    //-       type="password" 
+    //-       placeholder="Password"
+    //-       v-model="form.password.value"
+    //-       @blur="form.password.blur"
+    //-     )
+    //-     span.form__line
+    //-     span.form__error(v-show="!form.password.valid && form.password.touched")
+    //-     span.form__info(v-if="form.password.errors.required && form.password.touched") Please enter password
+    //-     span.form__info(v-else-if="form.password.errors.minLength && form.password.touched") Password lenght 8. Now {{form.password.value.length}}
+    //-   .form__group
+    //-     input.form__control(
+    //-       name="comment-text" 
+    //-       type="text" 
+    //-       placeholder="name"
+    //-       v-model="form.name.value"
+    //-       @blur="form.name.blur"
+    //-     )
+    //-     span.form__line
+    //-     span.form__error(v-show="!form.name.valid && form.name.touched")
+    //-     span.form__info(v-if="form.name.errors.required && form.name.touched") Please enter password
+    //-     span.form__info(v-else-if="form.name.errors.minLength && form.name.touched") Password lenght 8. Now {{form.name.value.length}}
+    //- form.form()
+    //-   .form__group
+    //-     input.form__control(
+    //-       v-for(item in array)
+    //-       :type="form[item].type"
+    //-     )
     form.form()
-      .form__group
+      .form__group(v-for="field in fields")
         input.form__control(
-          name="comment-text" 
-          type="text" 
-          placeholder="Email"
-          v-model="form.email.value"
-          @blur="emailBlur"
+          :type="form[field].type"
+          :placeholder="form[field].placeholder"
+          v-model="form[field].value"
+          @blur="form[field].blur"
         )
         span.form__line
-        span.form__error(v-show="emaiError")
-        span.form__info(v-if="emaiErrorInfo") Please enter email
-      .form__group
-        input.form__control(
-          name="comment-text" 
-          type="password" 
-          placeholder="Password"
-          v-model="form.password.value"
-          @blur="form.password.blur"
-        )
-        span.form__line
-        span.form__error(v-show="!form.password.valid && form.password.touched")
-        span.form__info(v-if="form.password.errors.required && form.password.touched") Please enter password
-        span.form__info(v-else-if="form.password.errors.minLength && form.password.touched") Password lenght 8. Now {{form.password.value.length}}
+        span.form__error(v-show="!form[field].valid && form[field].touched")
+        span.form__info(v-if="form[field].errors.required && form[field].touched") Ввведите {{form[field].placeholder}}
+        span.form__info(v-else-if="form[field].errors.minLength && form[field].touched") Болшше 8 знаков, сейчас {{form[field].value.length}}
     .form__group
       .btn(type='submit' :disabled="!form.valid" :class="{ 'btn__disabled': !form.valid }") Submit
 </template>
@@ -40,24 +70,41 @@ const required = val => !!val
 const minLength = num => val => val.length >= num
 
 import { useForm } from '@/use/form'
-import { computed } from '@vue/runtime-core'
 const form = useForm({
+  name: {
+    value: "",
+    validators: {required},
+    type: 'text',
+    placeholder: 'ФИО'
+  },
+  position: {
+    value: "",
+    validators: {required},
+    type: 'text',
+    placeholder: 'Ваша Должность'
+  },
+  phone: {
+    value: "",
+    validators: {required},
+    type: 'text',
+    placeholder: 'Ваш Контактный телефон'
+  },
   email: {
     value: "",
-    validators: { required }
+    validators: { required },
+    type: "text",
+    placeholder: "Email"
   },
   password: {
     value: "",
-    validators: { required, minLength: minLength(8) }
+    validators: { required, minLength: minLength(8) },
+    type: "password",
+    placeholder: "Пароль"
   }
 })
 
+const fields = Object.keys(form).filter(item => item !== 'valid')
 
-const emailBlur = form.email.blur
-const emaiError = computed(() => !form.email.valid && form.email.touched)
-const emaiErrorInfo = computed(() => form.email.errors.required && form.email.touched)
-
- 
 
 </script>
 
@@ -68,6 +115,7 @@ const emaiErrorInfo = computed(() => form.email.errors.required && form.email.to
 }
 
 .modal {
+  color: #fff;
   display: flex;
   flex-direction: column;
   justify-content: center;
